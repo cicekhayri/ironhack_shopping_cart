@@ -6,15 +6,27 @@ class ShoppingCart
     @season = season
     @cart = {}
     get_prices
+    get_discounts
+    prices_of_day
   end
 
-  def get_prices
+  def get_discounts
+    @discount = {:bananas => 1, :apples => 0.5, :oranges => 2.0/3, :grapes => 1, :watermelon => 1}
+  end
+
+  def prices_of_day
+    @prices[:watermelon] *= 2 if Date.parse('2014-09-20').sunday? 
+  end
+
+  def set_prices_for_season
     @price_spring = {:bananas => 20, :apples => 10, :oranges => 5, :grapes => 15, :watermelon => 50}
     @price_summer = {:bananas => 20, :apples => 10, :oranges => 2, :grapes => 15, :watermelon => 50}
     @price_autumn = {:bananas => 20, :apples => 15, :oranges => 5, :grapes => 15, :watermelon => 50}
     @price_winter = {:bananas => 21, :apples => 12, :oranges => 5, :grapes => 15, :watermelon => 50}
-    
-    @discount = {:bananas => 1, :apples => 0.5, :oranges => 2.0/3, :grapes => 1, :watermelon => 1}
+  end
+
+  def get_prices
+    set_prices_for_season
 
     @prices = case @season
     when "winter"
@@ -28,10 +40,7 @@ class ShoppingCart
     else
       @price_autumn
     end
-
-    @prices[:watermelon] *= 2 if Date.parse('2014-09-20').sunday? 
   end
-
 
   def add(item, quantity)
     if @cart.has_key?(item)
@@ -41,20 +50,22 @@ class ShoppingCart
     end
   end
 
+  def special_gift_for_grapes
+    if @cart.has_key?(:grapes) && @cart[:grapes] >= 4
+      self.add(:bananas, 1)
+    end
+  end
+
   def calculate
     sum = 0
     @cart.each do |item, quantity|
       sum += quantity * @prices[item] * @discount[item]
     end
 
-    if @cart.has_key?(:grapes) && @cart[:grapes] >= 4
-      self.add(:bananas, 1)
-    end
+    special_gift_for_grapes
 
     return sum
   end
-
-
   
   def print_the_cart
     puts @cart
