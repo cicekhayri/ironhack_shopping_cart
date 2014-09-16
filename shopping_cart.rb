@@ -2,11 +2,13 @@ require 'pry'
 require 'date'
 
 class ShoppingCart
-  #attr_accessor :season
-
   def initialize(season)
     @season = season
     @cart = {}
+    get_prices
+  end
+
+  def get_prices
     @price_spring = {:bananas => 20, :apples => 10, :oranges => 5, :grapes => 15, :watermelon => 50}
     @price_summer = {:bananas => 20, :apples => 10, :oranges => 2, :grapes => 15, :watermelon => 50}
     @price_autumn = {:bananas => 20, :apples => 15, :oranges => 5, :grapes => 15, :watermelon => 50}
@@ -29,7 +31,6 @@ class ShoppingCart
 
     @prices[:watermelon] *= 2 if Date.parse('2014-09-20').sunday? 
   end
-
 
 
   def add(item, quantity)
