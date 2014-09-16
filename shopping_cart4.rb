@@ -52,55 +52,47 @@ class ShoppingLineCalculator
   attr_reader :line_cost
 
   def calculate(item, quantity, season)
-    new_item_price = ItemPrice.new(item, season) 
-    @line_cost = new_item_price.item_price * quantity
+    new_item_price = ItemPrice.new(season) 
+    @line_cost = new_item_price.item_price(item) * new_item_price.item_discount(item) * quantity
   end    
 end
 
 class ItemPrice
-  def initialize(item, season)
+  def initialize(season)
     @season = season
     get_prices
     get_discounts
     prices_of_day
-    @item_price = @prices[item] * @discount[item]
   end
 
-  attr_reader :item_price
-
-  def calculate
-    @item_price = @prices[item]
+  def item_price(item)
+    @prices[item]
   end
   
+  def item_discount(item)
+    @discount[item]
+  end
+
   def get_discounts
     @discount = {:bananas => 1, :apples => 0.5, :oranges => 2.0/3, :grapes => 1, :watermelon => 1}
   end
 
   def prices_of_day
-    @prices[:watermelon] *= 2 if Date.parse('2014-09-20').sunday? 
-  end
-
-  def set_prices_for_season
-    @price_spring = {:bananas => 20, :apples => 10, :oranges => 5, :grapes => 15, :watermelon => 50}
-    @price_summer = {:bananas => 20, :apples => 10, :oranges => 2, :grapes => 15, :watermelon => 50}
-    @price_autumn = {:bananas => 20, :apples => 15, :oranges => 5, :grapes => 15, :watermelon => 50}
-    @price_winter = {:bananas => 21, :apples => 12, :oranges => 5, :grapes => 15, :watermelon => 50}
+    @prices[:watermelon] *= 2 if Date.parse('2014-09-21').sunday? 
   end
 
   def get_prices
-    set_prices_for_season
-
     @prices = case @season
     when "winter"
-      @price_winter
+      {:bananas => 21, :apples => 12, :oranges => 5, :grapes => 15, :watermelon => 50}
     when "spring"
-      @price_spring
+      {:bananas => 20, :apples => 10, :oranges => 5, :grapes => 15, :watermelon => 50}
     when "summer"
-      @price_summer
+      {:bananas => 20, :apples => 10, :oranges => 2, :grapes => 15, :watermelon => 50}
     when "autumn"
-      @price_autumn
+      {:bananas => 20, :apples => 15, :oranges => 5, :grapes => 15, :watermelon => 50}
     else
-      @price_autumn
+      {:bananas => 20, :apples => 15, :oranges => 5, :grapes => 15, :watermelon => 50}
     end
   end
 
